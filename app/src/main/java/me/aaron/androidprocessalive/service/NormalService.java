@@ -1,4 +1,4 @@
-package me.aaron.androidprocessalive;
+package me.aaron.androidprocessalive.service;
 
 import android.app.Service;
 import android.content.Context;

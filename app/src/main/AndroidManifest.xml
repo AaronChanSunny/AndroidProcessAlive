@@ -19,25 +19,22 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".NormalService"/>
-        <service android:name=".ForegroundService"/>
+        <service android:name=".service.NormalService"/>
+        <service android:name=".service.ForegroundService"/>
         <service
-            android:name=".GrayService"
+            android:name=".service.GrayService"
             android:process=":gray">
         </service>
         <service
-            android:name=".GrayService$InnerService"
+            android:name=".service.GrayService$InnerService"
             android:process=":gray"/>
-
-        <activity
-            android:name=".ExampleActivity"
-            android:label="@string/title_activity_example"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="me.aaron.androidprocessalive.MainActivity"/>
-        </activity>
+        <service android:name=".service.NotifyService$InnerService"/>
+        <service android:name=".service.NotifyService"/>
+        <receiver android:name=".receiver.WakeReceiver">
+            <intent-filter>
+                <action android:name="me.aaron.androidprocessalive.receiver.WakeReceiver.GRAY_WAKE_ACTION" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

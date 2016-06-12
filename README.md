@@ -8,32 +8,33 @@
 
 ### 进程优先级
 
-#### 前台进程
+- 前台进程
 
 如果一个进程满足以下任一条件，则判定为前台进程：
 
-- 托管用户正在交互的 Activity（已调用 Activity#onResume() 方法）
-- 托管某个 Service，并且该 Service 绑定到用户正在交互的 Activity
-- 托管正在`前台`运行的 Service（服务已调用 startForeground()）
-- 托管正在执行某些生命周期回调的 Service（onCreate(), onStart(), onDestroy）
-- 托管正执行其 onReceive() 方法的 BroadcastReceiver
+1. 托管用户正在交互的 Activity（已调用 Activity#onResume() 方法）
+2. 托管某个 Service，并且该 Service 绑定到用户正在交互的 Activity
+3. 托管正在`前台`运行的 Service（服务已调用 startForeground()）
+4. 托管正在执行某些生命周期回调的 Service（onCreate(), onStart(), onDestroy）
+5. 托管正执行其 onReceive() 方法的 BroadcastReceiver
 
-#### 可见进程
+- 可见进程
 
 没有任何前台组件，但仍然会影响用户在屏幕上所见内容的进程。如果一个进程满足以下任一条件，则可判定为可见进程：
 
-- 托管不在前台，但是仍然可见的 Activity（已调用 onPause() 方法）。例如，如果前台 Activity 启动了一个对话框，允许在其后显示上一 Activity，则有可能会发生这种情况
-- 托管绑定到可见（或前台）Activity 的 Service
+1. 托管不在前台，但是仍然可见的 Activity（已调用 onPause() 方法）。例如，如果前台 Activity 启动了一个对话框，允许在其后显示上一
+Activity，则有可能会发生这种情况
+2. 托管绑定到可见（或前台）Activity 的 Service
 
-#### 服务进程
+- 服务进程
 
 正在运行已使用 startService() 方法启动的服务且不属于上述两个更高类别进程的进程。
 
-#### 后台进程
+- 后台进程
 
 包含目前对用户不可见的 Activity 的进程（已调用 Activity 的 onStop() 方法）。
 
-#### 空进程
+- 空进程
 
 不含任何活动应用组件的进程。
 
@@ -315,6 +316,127 @@ public class GrayService extends Service {
 开机启动、网络状态变化、充电状态变化等系统广播在高版本的系统和定制 Rom 上已经失效，这里不做讨论。
 
 ### AlarmManager or JobScheduler 循环触发
+
+使用 AlarmManager 服务，定时拉起目标 Service。这里需要注意一点，需要对 Service 的状态进行判断。如果目标 Service
+并没有被回收，不需要再次开启任务。这里以 GrayService 拉起 NotifyService 的场景进行说明（实际对应的就是保活进程 Service 拉起被系统干掉的 UI 进程的
+Service），具体代码：
+
+GrayService：
+```
+@Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            InnerService.actionStart(this);
+            startForeground(GRAY_SERVICE_ID, new Notification());
+        } else {
+            startForeground(GRAY_SERVICE_ID, new Notification());
+        }
+
+        setupAlarm();
+
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void setupAlarm() {
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        Intent alarmIntent = new Intent(WakeReceiver.GRAY_WAKE_ACTION);
+        PendingIntent operation = PendingIntent.getBroadcast(
+                this,
+                WAKE_REQUEST_CODE,
+                alarmIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        am.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP,
+                System.currentTimeMillis(),
+                INTERVAL,
+                operation);
+    }
+```
+
+WakeReceiver：
+```
+public class WakeReceiver extends BroadcastReceiver {
+
+    private static final String TAG = WakeReceiver.class.getSimpleName();
+    public static final String GRAY_WAKE_ACTION = "me.aaron.androidprocessalive.receiver.WakeReceiver.GRAY_WAKE_ACTION";
+
+    public WakeReceiver() {
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Log.d(TAG, "onReceive");
+        String action = intent.getAction();
+        if (GRAY_WAKE_ACTION.equals(action)) {
+            context.startService(new Intent(context, NotifyService.class));
+        }
+    }
+}
+```
+
+NotifyService：
+```
+public class NotifyService extends Service {
+
+    private static final String TAG = NotifyService.class.getSimpleName();
+
+    private boolean mIsRunning;
+
+    public static void actionStart(Context context) {
+        context.startService(new Intent(context, NotifyService.class));
+    }
+
+    public NotifyService() {
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d(TAG, "onCreate");
+
+        mIsRunning = false;
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(TAG, "onStartCommand");
+
+        if (!mIsRunning) {
+            mIsRunning = true;
+
+            doSomething();
+        }
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    private void doSomething() {
+        Log.d(TAG, "doSomething...");
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true) {
+                    SystemClock.sleep(3000);
+                    Log.d(TAG, "doing...");
+                }
+            }
+        }).start();
+    }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        // TODO: Return the communication channel to the service.
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        super.onDestroy();
+    }
+}
+```
 
 ## 参考
 

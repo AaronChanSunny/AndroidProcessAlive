@@ -1,4 +1,4 @@
-package me.aaron.androidprocessalive;
+package me.aaron.androidprocessalive.service;
 
 import android.app.Notification;
 import android.app.Service;
@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
+
+import me.aaron.androidprocessalive.R;
 
 public class ForegroundService extends Service {
 

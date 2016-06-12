@@ -7,6 +7,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import me.aaron.androidprocessalive.service.ForegroundService;
+import me.aaron.androidprocessalive.service.GrayService;
+import me.aaron.androidprocessalive.service.NormalService;
+import me.aaron.androidprocessalive.service.NotifyService;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -40,6 +45,13 @@ public class MainActivity extends AppCompatActivity {
                 GrayService.actionStart(MainActivity.this);
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        NotifyService.actionStart(this);
     }
 
     @Override
