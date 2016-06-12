@@ -8,7 +8,7 @@
 
 ### 进程优先级
 
-1. 前台进程
+#### 前台进程
 
 如果一个进程满足以下任一条件，则判定为前台进程：
 
@@ -18,22 +18,22 @@
 - 托管正在执行某些生命周期回调的 Service（onCreate(), onStart(), onDestroy）
 - 托管正执行其 onReceive() 方法的 BroadcastReceiver
 
-2. 可见进程
+#### 可见进程
 
 没有任何前台组件，但仍然会影响用户在屏幕上所见内容的进程。如果一个进程满足以下任一条件，则可判定为可见进程：
 
 - 托管不在前台，但是仍然可见的 Activity（已调用 onPause() 方法）。例如，如果前台 Activity 启动了一个对话框，允许在其后显示上一 Activity，则有可能会发生这种情况
 - 托管绑定到可见（或前台）Activity 的 Service
 
-3. 服务进程
+#### 服务进程
 
 正在运行已使用 startService() 方法启动的服务且不属于上述两个更高类别进程的进程。
 
-4. 后台进程
+#### 后台进程
 
 包含目前对用户不可见的 Activity 的进程（已调用 Activity 的 onStop() 方法）。
 
-5. 空进程
+#### 空进程
 
 不含任何活动应用组件的进程。
 
@@ -318,7 +318,7 @@ public class GrayService extends Service {
 
 ## 参考
 
-[Processes and Threads](https://developer.android.com/guide/components/processes-and-threads.html)
-[论Android应用进程长存的可行性](http://blog.csdn.net/aigestudio/article/details/51348408)
-[微信Android客户端后台保活经验分享](http://www.infoq.com/cn/articles/wechat-android-background-keep-alive)
-[关于 Android 进程保活，你所需要知道的一切](http://www.jianshu.com/p/63aafe3c12af)
+- [Processes and Threads](https://developer.android.com/guide/components/processes-and-threads.html)
+- [论Android应用进程长存的可行性](http://blog.csdn.net/aigestudio/article/details/51348408)
+- [微信Android客户端后台保活经验分享](http://www.infoq.com/cn/articles/wechat-android-background-keep-alive)
+- [关于 Android 进程保活，你所需要知道的一切](http://www.jianshu.com/p/63aafe3c12af)
