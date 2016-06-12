@@ -18,6 +18,26 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <service android:name=".NormalService"/>
+        <service android:name=".ForegroundService"/>
+        <service
+            android:name=".GrayService"
+            android:process=":gray">
+        </service>
+        <service
+            android:name=".GrayService$InnerService"
+            android:process=":gray"/>
+
+        <activity
+            android:name=".ExampleActivity"
+            android:label="@string/title_activity_example"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="me.aaron.androidprocessalive.MainActivity"/>
+        </activity>
     </application>
 
 </manifest>
