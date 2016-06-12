@@ -315,7 +315,7 @@ public class GrayService extends Service {
 
 开机启动、网络状态变化、充电状态变化等系统广播在高版本的系统和定制 Rom 上已经失效，这里不做讨论。
 
-### AlarmManager or JobScheduler 循环触发
+### 使用 AlarmManager 定时拉起进程
 
 使用 AlarmManager 服务，定时拉起目标 Service。这里需要注意一点，需要对 Service 的状态进行判断。如果目标 Service
 并没有被回收，不需要再次开启任务。这里以 GrayService 拉起 NotifyService 的场景进行说明（实际对应的就是保活进程 Service 拉起被系统干掉的 UI 进程的
