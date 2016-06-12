@@ -47,6 +47,7 @@ Activity，则有可能会发生这种情况
  * that the user is interacting with.
  */
 public static final int IMPORTANCE_FOREGROUND = 100;
+
 /**
  * Constant for {@link #importance}: This process is running a foreground
  * service, for example to perform music playback even while the user is
@@ -54,6 +55,7 @@ public static final int IMPORTANCE_FOREGROUND = 100;
  * is doing something the user actively cares about.
  */
 public static final int IMPORTANCE_FOREGROUND_SERVICE = 125;
+
 /**
  * Constant for {@link #importance}: This process is running the foreground
  * UI, but the device is asleep so it is not visible to the user.  This means
@@ -62,6 +64,7 @@ public static final int IMPORTANCE_FOREGROUND_SERVICE = 125;
  * return to once unlocking the device.
  */
 public static final int IMPORTANCE_TOP_SLEEPING = 150;
+
 /**
  * Constant for {@link #importance}: This process is running something
  * that is actively visible to the user, though not in the immediate
@@ -71,11 +74,13 @@ public static final int IMPORTANCE_TOP_SLEEPING = 150;
  * other services under the system's control that it inconsiders important.
  */
 public static final int IMPORTANCE_VISIBLE = 200;
+
 /**
  * Constant for {@link #importance}: This process is not something the user
  * is directly aware of, but is otherwise perceptable to them to some degree.
  */
 public static final int IMPORTANCE_PERCEPTIBLE = 130;
+
 /**
  * Constant for {@link #importance}: This process is running an
  * application that can not save its state, and thus can't be killed
@@ -83,6 +88,7 @@ public static final int IMPORTANCE_PERCEPTIBLE = 130;
  * @hide
  */
 public static final int IMPORTANCE_CANT_SAVE_STATE = 170;
+
 /**
  * Constant for {@link #importance}: This process is contains services
  * that should remain running.  These are background services apps have
@@ -91,16 +97,19 @@ public static final int IMPORTANCE_CANT_SAVE_STATE = 170;
  * stay running as long as they want to).
  */
 public static final int IMPORTANCE_SERVICE = 300;
+
 /**
  * Constant for {@link #importance}: This process process contains
  * background code that is expendable.
  */
 public static final int IMPORTANCE_BACKGROUND = 400;
+
 /**
  * Constant for {@link #importance}: This process is empty of any
  * actively running code.
  */
 public static final int IMPORTANCE_EMPTY = 500;
+
 /**
  * Constant for {@link #importance}: This process does not exist.
  */
@@ -119,57 +128,72 @@ public static final int IMPORTANCE_GONE = 1000;
 
 ```
 // OOM adjustments for processes in various states:
+
 // Adjustment used in certain places where we don't know it yet.
 // (Generally this is something that is going to be cached, but we
 // don't know the exact value in the cached range to assign yet.)
 static final int UNKNOWN_ADJ = 16;
+
 // This is a process only hosting activities that are not visible,
 // so it can be killed without any disruption.
 static final int CACHED_APP_MAX_ADJ = 15;
 static final int CACHED_APP_MIN_ADJ = 9;
+
 // The B list of SERVICE_ADJ -- these are the old and decrepit
-// services that aren't as shiny and interesting as the ones in the A
+// services that aren't as shiny and interesting as the ones in the A list.
 static final int SERVICE_B_ADJ = 8;
-// This is the process of the previous application that the user was i
-// This process is kept above other things, because it is very common
+
+// This is the process of the previous application that the user was in.
+// This process is kept above other things, because it is very common to
 // switch back to the previous app.  This is important both for recent
-// task switch (toggling between the two top recent apps) as well as n
-// UI flow such as clicking on a URI in the e-mail app to view in the
+// task switch (toggling between the two top recent apps) as well as normal
+// UI flow such as clicking on a URI in the e-mail app to view in the browser,
 // and then pressing back to return to e-mail.
 static final int PREVIOUS_APP_ADJ = 7;
+
 // This is a process holding the home application -- we want to try
-// avoiding killing it, even if it would normally be in the background
+// avoiding killing it, even if it would normally be in the background,
 // because the user interacts with it so much.
 static final int HOME_APP_ADJ = 6;
-// This is a process holding an application service -- killing it will
+
+// This is a process holding an application service -- killing it will not
 // have much of an impact as far as the user is concerned.
 static final int SERVICE_ADJ = 5;
+
 // This is a process with a heavy-weight application.  It is in the
 // background, but we want to try to avoid killing it.  Value set in
 // system/rootdir/init.rc on startup.
 static final int HEAVY_WEIGHT_APP_ADJ = 4;
+
 // This is a process currently hosting a backup operation.  Killing it
 // is not entirely fatal but is generally a bad idea.
 static final int BACKUP_APP_ADJ = 3;
-// This is a process only hosting components that are perceptible to t
+
+// This is a process only hosting components that are perceptible to the
 // user, and we really want to avoid killing them, but they are not
 // immediately visible. An example is background music playback.
 static final int PERCEPTIBLE_APP_ADJ = 2;
+
 // This is a process only hosting activities that are visible to the
 // user, so we'd prefer they don't disappear.
 static final int VISIBLE_APP_ADJ = 1;
-// This is the process running the current foreground app.  We'd reall
+
+// This is the process running the current foreground app.  We'd really
 // rather not kill it!
 static final int FOREGROUND_APP_ADJ = 0;
-// This is a process that the system or a persistent process has bound
+
+// This is a process that the system or a persistent process has bound to,
 // and indicated it is important.
 static final int PERSISTENT_SERVICE_ADJ = -11;
+
 // This is a system persistent process, such as telephony.  Definitely
 // don't want to kill it, but doing so is not completely fatal.
 static final int PERSISTENT_PROC_ADJ = -12;
+
 // The system process runs at the default adjustment.
 static final int SYSTEM_ADJ = -16;
-// Special code for native processes that are not being managed by the
+
+// Special code for native processes that are not being managed by the system (so
 // don't have an oom adj assigned by the system).
 static final int NATIVE_ADJ = -17;
 ```
